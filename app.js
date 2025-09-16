@@ -1,294 +1,355 @@
-// ===== Constants & State =====
-const STORAGE_KEYS = {
-  items: 'todo-items',
-  lang: 'todo-lang',
-  filter: 'todo-filter',
+// ========= Constants & State =========
+const LS = {
+  diary: 'diary-text',
+  level: 'diary-level',
+  showAll: 'diary-show-translations',
+  saves: 'diary-saved-sentences',
 };
 
-const i18n = {
-  ko: {
-    title: '나의 투두리스트',
-    input_label: '할 일 입력',
-    input_placeholder: '해야 할 일을 입력하세요',
-    add: '추가',
-    filter_all: '전체',
-    filter_active: '미완료',
-    filter_completed: '완료',
-    count_total: '전체',
-    count_active: '미완료',
-    delete: '삭제',
-    edit_placeholder: '내용을 수정하세요',
-  },
-  en: {
-    title: 'My Todo List',
-    input_label: 'Add a task',
-    input_placeholder: 'Type a task...',
-    add: 'Add',
-    filter_all: 'All',
-    filter_active: 'Active',
-    filter_completed: 'Completed',
-    count_total: 'Total',
-    count_active: 'Active',
-    delete: 'Delete',
-    edit_placeholder: 'Edit task...',
-  },
-};
-
-let state = {
-  items: [],
-  filter: 'all', // 'all' | 'active' | 'completed'
-  lang: 'ko',
-};
-
-// ===== Utilities =====
-function uid() {
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function saveState() {
-  localStorage.setItem(STORAGE_KEYS.items, JSON.stringify(state.items));
-  localStorage.setItem(STORAGE_KEYS.lang, state.lang);
-  localStorage.setItem(STORAGE_KEYS.filter, state.filter);
-}
-
-function loadState() {
-  try {
-    const items = JSON.parse(localStorage.getItem(STORAGE_KEYS.items) || '[]');
-    if (Array.isArray(items)) state.items = items;
-  } catch {}
-  const lang = localStorage.getItem(STORAGE_KEYS.lang);
-  if (lang === 'ko' || lang === 'en') state.lang = lang;
-  const filter = localStorage.getItem(STORAGE_KEYS.filter);
-  if (filter === 'all' || filter === 'active' || filter === 'completed') state.filter = filter;
-}
-
-// ===== DOM =====
-const $ = (sel, root = document) => root.querySelector(sel);
-const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
 const els = {
-  today: $('#today'),
   year: $('#year'),
-  title: document.querySelector('[data-i18n="title"]'),
-  form: $('#add-form'),
-  input: $('#todo-input'),
-  list: $('#todo-list'),
-  countAll: $('#count-all'),
-  countActive: $('#count-active'),
-  filterButtons: $$('.filter'),
-  langToggle: $('#lang-toggle'),
+  level: $('#level-select'),
+  btnApplyLevel: $('#btn-apply-level'),
+  toggleAll: $('#toggle-all-trans'),
+  cards: $('#cards-grid'),
+  sidebar: $('#sidebar-list'),
+  diary: $('#diary'),
+  btnSave: $('#btn-save'),
+  btnLoad: $('#btn-load'),
+  btnClear: $('#btn-clear'),
+  downloadJson: $('#download-json'),
 };
 
-function formatToday() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const d = String(now.getDate()).padStart(2, '0');
-  return state.lang === 'ko' ? `${y}-${m}-${d}` : `${m}/${d}/${y}`;
-}
+let appData = null; // sentences.json content
+let currentLevelKey = 'kindergarten';
+let showAllTranslations = false;
+let voices = [];
+let savedSentences = [];
 
-function setTodayAndYear() {
-  if (els.today) els.today.textContent = formatToday();
+// ========= Utilities =========
+function setYear() {
   if (els.year) els.year.textContent = String(new Date().getFullYear());
 }
 
-// ===== i18n =====
-function applyI18n() {
-  const dict = i18n[state.lang];
-  // Elements with data-i18n (innerText)
-  $$('[data-i18n]').forEach((node) => {
-    const key = node.getAttribute('data-i18n');
-    if (dict[key]) node.textContent = dict[key];
-  });
-  // Elements with data-i18n-placeholder
-  $$('[data-i18n-placeholder]').forEach((node) => {
-    const key = node.getAttribute('data-i18n-placeholder');
-    if (dict[key]) node.setAttribute('placeholder', dict[key]);
-  });
-  // Update dynamic labels like delete buttons in list
-  $$('.todo-item .delete-btn').forEach((btn) => {
-    btn.setAttribute('aria-label', dict.delete);
-    btn.textContent = dict.delete;
-  });
-  // Update edit input placeholders
-  $$('.todo-item .edit-input').forEach((inp) => {
-    inp.setAttribute('placeholder', dict.edit_placeholder);
-  });
-  setTodayAndYear();
+function saveDiary() {
+  localStorage.setItem(LS.diary, els.diary.value);
+}
+function loadDiary() {
+  const v = localStorage.getItem(LS.diary);
+  if (v != null) els.diary.value = v;
+}
+function saveLevel(key) {
+  localStorage.setItem(LS.level, key);
+}
+function loadLevel() {
+  const v = localStorage.getItem(LS.level);
+  if (v && els.level.querySelector(`option[value="${v}"]`)) return v;
+  return 'kindergarten';
+}
+function saveShowAll(flag) {
+  localStorage.setItem(LS.showAll, flag ? '1' : '0');
+}
+function loadShowAll() {
+  return localStorage.getItem(LS.showAll) === '1';
 }
 
-// ===== Rendering =====
-function filteredItems() {
-  if (state.filter === 'active') return state.items.filter((it) => !it.completed);
-  if (state.filter === 'completed') return state.items.filter((it) => it.completed);
-  return state.items;
+function sentenceId(idx) { return `s-${idx}`; }
+
+function loadSaves() {
+  try {
+    const raw = localStorage.getItem(LS.saves) || '[]';
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) savedSentences = arr.filter(x => x && typeof x.en === 'string' && typeof x.ko === 'string');
+  } catch { savedSentences = []; }
 }
-
-function updateCounters() {
-  const total = state.items.length;
-  const active = state.items.filter((it) => !it.completed).length;
-  els.countAll.textContent = String(total);
-  els.countActive.textContent = String(active);
+function saveSaves() {
+  localStorage.setItem(LS.saves, JSON.stringify(savedSentences));
 }
-
-function createItemElement(item) {
-  const li = document.createElement('li');
-  li.className = 'todo-item' + (item.completed ? ' completed' : '');
-  li.dataset.id = item.id;
-
-  // Checkbox
-  const checkbox = document.createElement('input');
-  checkbox.type = 'checkbox';
-  checkbox.checked = item.completed;
-  checkbox.addEventListener('change', () => {
-    item.completed = checkbox.checked;
-    item.updatedAt = Date.now();
-    li.classList.toggle('completed', item.completed);
-    saveState();
-    updateCounters();
-    // Keep item in list; just visual change
-  });
-
-  // Text span
-  const text = document.createElement('span');
-  text.className = 'text';
-  text.textContent = item.text;
-  text.title = item.text;
-
-  // Edit input
-  const editInput = document.createElement('input');
-  editInput.type = 'text';
-  editInput.className = 'edit-input';
-  editInput.value = item.text;
-  editInput.setAttribute('placeholder', i18n[state.lang].edit_placeholder);
-
-  function enterEdit() {
-    li.classList.add('editing');
-    editInput.value = item.text;
-    editInput.focus();
-    editInput.setSelectionRange(editInput.value.length, editInput.value.length);
+function isSavedSentence(s) {
+  return savedSentences.some(x => x.en === s.en && x.ko === s.ko);
+}
+function toggleSaveSentence(s) {
+  const idx = savedSentences.findIndex(x => x.en === s.en && x.ko === s.ko);
+  if (idx >= 0) {
+    savedSentences.splice(idx, 1);
+  } else {
+    savedSentences.unshift({ en: s.en, ko: s.ko });
   }
+  saveSaves();
+  renderSidebarSaved();
+}
 
-  function exitEdit(save) {
-    if (save) {
-      const v = editInput.value.trim();
-      if (v) {
-        item.text = v;
-        item.updatedAt = Date.now();
-        text.textContent = v;
-        text.title = v;
-        saveState();
+// ========= Data Fetch =========
+async function fetchSentences() {
+  // Fetch local JSON; works on GitHub Pages if files are in same repo
+  const res = await fetch('sentences.json', { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to load sentences.json');
+  return res.json();
+}
+
+// ========= TTS =========
+function loadVoices() {
+  voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+}
+function pickEnglishVoice() {
+  if (!voices || voices.length === 0) return null;
+  // Prefer en-US female if available, otherwise any en*
+  const preferred = voices.find(v => /en-US/i.test(v.lang) && /female/i.test(v.name));
+  if (preferred) return preferred;
+  const en = voices.find(v => /^en[-_]/i.test(v.lang));
+  return en || voices[0];
+}
+function speak(text) {
+  if (!('speechSynthesis' in window)) {
+    alert('TTS is not supported in this browser.');
+    return;
+  }
+  const u = new SpeechSynthesisUtterance(text);
+  const v = pickEnglishVoice();
+  if (v) u.voice = v;
+  u.rate = 1.0;
+  u.pitch = 1.0;
+  u.lang = (v && v.lang) || 'en-US';
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+// ========= Rendering =========
+function renderCards(levelData) {
+  els.cards.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  const max = Math.min(20, levelData.sentences.length);
+  for (let i = 0; i < max; i++) {
+    const s = levelData.sentences[i];
+    const card = document.createElement('article');
+    card.className = 'card' + (showAllTranslations ? ' show-ko' : '');
+    card.dataset.id = sentenceId(i);
+
+    const pEn = document.createElement('p');
+    pEn.className = 'card__text';
+    pEn.textContent = s.en;
+    pEn.title = s.en;
+    pEn.addEventListener('click', () => appendToDiary(s.en));
+
+    const pKo = document.createElement('p');
+    pKo.className = 'card__trans';
+    pKo.textContent = s.ko;
+    pKo.title = s.ko;
+    pKo.addEventListener('click', () => appendToDiary(s.ko));
+
+    const actions = document.createElement('div');
+    actions.className = 'card__actions';
+
+    const btnToggle = document.createElement('button');
+    btnToggle.className = 'btn';
+    btnToggle.type = 'button';
+    btnToggle.textContent = '번역';
+    btnToggle.addEventListener('click', () => {
+      card.classList.toggle('show-ko');
+    });
+    const btnSpeak = document.createElement('button');
+    btnSpeak.className = 'btn';
+    btnSpeak.type = 'button';
+    btnSpeak.textContent = '발음 재생';
+    btnSpeak.addEventListener('click', () => speak(s.en));
+
+    const btnSaveSentence = document.createElement('button');
+    btnSaveSentence.className = 'btn';
+    btnSaveSentence.type = 'button';
+    const setSaveBtnState = () => {
+      const saved = isSavedSentence(s);
+      btnSaveSentence.textContent = saved ? '저장됨' : '저장';
+      btnSaveSentence.setAttribute('aria-pressed', String(saved));
+    };
+    setSaveBtnState();
+    btnSaveSentence.addEventListener('click', () => {
+      toggleSaveSentence(s);
+      setSaveBtnState();
+    });
+
+    actions.append(btnToggle, btnSpeak, btnSaveSentence);
+    card.append(pEn, pKo, actions);
+    frag.appendChild(card);
+  }
+  els.cards.appendChild(frag);
+}
+
+function renderSidebarSaved() {
+  if (!els.sidebar) return;
+  els.sidebar.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  savedSentences.forEach((s, i) => {
+    const li = document.createElement('li');
+    li.className = 'sidebar__item';
+    li.dataset.index = String(i);
+    li.draggable = true;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'sidebar__row';
+    const textWrap = document.createElement('div');
+    textWrap.className = 'sidebar__text';
+    textWrap.innerHTML = `<strong class="en">${escapeHtml(s.en)}</strong><span class="ko">${escapeHtml(s.ko)}</span>`;
+    textWrap.addEventListener('click', () => appendToDiary(s.en));
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'btn btn--sm btn--danger';
+    delBtn.type = 'button';
+    delBtn.textContent = '삭제';
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      savedSentences.splice(i, 1);
+      saveSaves();
+      renderSidebarSaved();
+    });
+
+    wrapper.append(textWrap, delBtn);
+    li.appendChild(wrapper);
+
+    // Drag & Drop events
+    li.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', String(i));
+      e.dataTransfer.effectAllowed = 'move';
+      li.classList.add('dragging');
+    });
+    li.addEventListener('dragend', () => li.classList.remove('dragging'));
+    li.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      li.classList.add('dragover');
+    });
+    li.addEventListener('dragleave', () => li.classList.remove('dragover'));
+    li.addEventListener('drop', (e) => {
+      e.preventDefault();
+      li.classList.remove('dragover');
+      const from = Number(e.dataTransfer.getData('text/plain'));
+      const to = i;
+      if (!Number.isNaN(from) && from !== to) {
+        const [moved] = savedSentences.splice(from, 1);
+        savedSentences.splice(to, 0, moved);
+        saveSaves();
+        renderSidebarSaved();
       }
-    }
-    li.classList.remove('editing');
-  }
+    });
 
-  text.addEventListener('dblclick', () => enterEdit());
-  text.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') enterEdit();
+    frag.appendChild(li);
   });
+  els.sidebar.appendChild(frag);
+}
 
-  editInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      exitEdit(true);
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      exitEdit(false);
-    }
-  });
-  editInput.addEventListener('blur', () => exitEdit(true));
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
-  // Actions
-  const actions = document.createElement('div');
-  actions.className = 'actions';
+function appendToDiary(text) {
+  if (!els.diary) return;
+  const cur = els.diary.value;
+  const sep = cur && !cur.endsWith('\n') ? '\n' : '';
+  els.diary.value = cur + sep + text;
+  saveDiary();
+}
 
-  const del = document.createElement('button');
-  del.className = 'btn delete-btn';
-  del.type = 'button';
-  del.textContent = i18n[state.lang].delete;
-  del.setAttribute('aria-label', i18n[state.lang].delete);
-  del.addEventListener('click', () => {
-    const idx = state.items.findIndex((x) => x.id === item.id);
-    if (idx !== -1) {
-      state.items.splice(idx, 1);
-      saveState();
-      render();
-    }
-  });
-
-  actions.appendChild(del);
-
-  li.appendChild(checkbox);
-  li.appendChild(text);
-  li.appendChild(editInput);
-  li.appendChild(actions);
-
-  return li;
+function applyShowAllButton() {
+  els.toggleAll.setAttribute('aria-pressed', String(showAllTranslations));
+  // 버튼 라벨은 간단히 "번역"으로 유지
+  els.toggleAll.textContent = '번역';
 }
 
 function render() {
-  // Update filter active button
-  els.filterButtons.forEach((btn) => {
-    const isActive = btn.dataset.filter === state.filter;
-    btn.classList.toggle('is-active', isActive);
-    btn.setAttribute('aria-selected', String(isActive));
-  });
-
-  // List
-  els.list.innerHTML = '';
-  const items = filteredItems();
-  const frag = document.createDocumentFragment();
-  items.forEach((item) => frag.appendChild(createItemElement(item)));
-  els.list.appendChild(frag);
-
-  updateCounters();
-  applyI18n();
+  if (!appData) return;
+  const levelData = appData.levels[currentLevelKey];
+  if (!levelData) return;
+  renderCards(levelData);
+  renderSidebarSaved();
+  applyShowAllButton();
 }
 
-// ===== Events =====
+// ========= Events =========
 function setupEvents() {
-  // Add new item
-  els.form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const text = els.input.value.trim();
-    if (!text) return;
-    const now = Date.now();
-    state.items.push({ id: uid(), text, completed: false, createdAt: now, updatedAt: now });
-    els.input.value = '';
-    saveState();
-    render();
-    els.input.focus();
-  });
-
-  // Filters
-  els.filterButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const f = btn.dataset.filter;
-      if (f === 'all' || f === 'active' || f === 'completed') {
-        state.filter = f;
-        saveState();
-        render();
-      }
+  if (els.btnSave) {
+    els.btnSave.addEventListener('click', () => {
+      saveDiary();
+      els.btnSave.textContent = '저장됨!';
+      setTimeout(() => (els.btnSave.textContent = '저장'), 1000);
     });
-  });
+  }
+  if (els.btnLoad) {
+    els.btnLoad.addEventListener('click', () => {
+      loadDiary();
+      els.btnLoad.textContent = '불러왔어요';
+      setTimeout(() => (els.btnLoad.textContent = '불러오기'), 1000);
+    });
+  }
+  if (els.btnClear) {
+    els.btnClear.addEventListener('click', () => {
+      if (!els.diary) return;
+      els.diary.value = '';
+      saveDiary();
+    });
+  }
+  if (els.diary) {
+    els.diary.addEventListener('input', saveDiary);
+  }
 
-  // Language toggle
-  els.langToggle.addEventListener('click', () => {
-    state.lang = state.lang === 'ko' ? 'en' : 'ko';
-    saveState();
-    applyI18n();
-  });
+  // Level changes only when Apply is clicked
+  if (els.btnApplyLevel) {
+    els.btnApplyLevel.addEventListener('click', () => {
+      currentLevelKey = els.level.value;
+      saveLevel(currentLevelKey);
+      render();
+    });
+  }
 
-  // Accessibility: Enter on input already handled by form submit
+  if (els.toggleAll) {
+    els.toggleAll.addEventListener('click', () => {
+      showAllTranslations = !showAllTranslations;
+      saveShowAll(showAllTranslations);
+      render();
+    });
+  }
+
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => {
+      loadVoices();
+    };
+    loadVoices();
+  }
 }
 
-// ===== Init =====
-function init() {
-  loadState();
-  setupEvents();
-  setTodayAndYear();
-  render();
+// ========= Init =========
+async function init() {
+  setYear();
+  // Init persisted state
+  currentLevelKey = loadLevel();
+  if (els.level) els.level.value = currentLevelKey;
+  showAllTranslations = loadShowAll();
+  applyShowAllButton();
+  if (els.diary) loadDiary();
+  loadSaves();
+
+  // Link to JSON for transparency
+  if (els.downloadJson) {
+    els.downloadJson.href = 'sentences.json';
+    els.downloadJson.target = '_blank';
+    els.downloadJson.rel = 'noopener';
+  }
+
+  try {
+    appData = await fetchSentences();
+    render();
+  } catch (e) {
+    console.error(e);
+    if (els.cards) {
+      els.cards.innerHTML = '<p>문장을 불러오지 못했습니다. 페이지를 새로고침 해주세요.</p>';
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

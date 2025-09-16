@@ -3,45 +3,45 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Todo App</title>
-    <link rel="stylesheet" href="style.css">
+    <title>영어 일기 학습</title>
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <div class="app">
-      <header class="app__header">
-        <div class="app__title">
-          <h1 data-i18n="title">나의 투두리스트</h1>
-          <span class="app__date" id="today"></span>
+    <div class="container">
+      <header class="header" role="banner">
+        <div class="brand">
+          <h1 class="brand__title">영어 일기작성 도우미</h1>
+          <p class="brand__subtitle">수준에 맞는 표현을 익히고, 나만의 일기를 작성해보세요.</p>
         </div>
-        <div class="app__actions">
-          <button id="lang-toggle" class="btn" aria-label="Toggle language">한/영</button>
+        <div class="controls">
+          <label for="level-select" class="label">학습 수준</label>
+          <select id="level-select" class="select" aria-label="학습 수준 선택">
+            <option value="kindergarten">유치원</option>
+            <option value="elementary_low">초등 저학년</option>
+            <option value="elementary_high">초등 고학년</option>
+            <option value="middle">중학생</option>
+            <option value="high">고등학생</option>
+            <option value="university">대학생</option>
+          </select>
+          <button id="btn-apply-level" class="btn btn--primary" aria-label="수준 적용">적용</button>
+          <button id="toggle-all-trans" class="btn" aria-pressed="false" aria-label="번역">번역</button>
         </div>
       </header>
 
-      <main class="app__main">
-        <form id="add-form" class="add-form" autocomplete="off">
-          <label for="todo-input" class="sr-only" data-i18n="input_label">할 일 입력</label>
-          <input id="todo-input" name="todo" type="text" placeholder="해야 할 일을 입력하세요" data-i18n-placeholder="input_placeholder" />
-          <button type="submit" class="btn btn--primary" data-i18n="add">추가</button>
-        </form>
-
-        <div class="toolbar">
-          <div class="filters" role="tablist" aria-label="Filters">
-            <button class="filter btn btn--ghost is-active" data-filter="all" role="tab" aria-selected="true" data-i18n="filter_all">전체</button>
-            <button class="filter btn btn--ghost" data-filter="active" role="tab" aria-selected="false" data-i18n="filter_active">미완료</button>
-            <button class="filter btn btn--ghost" data-filter="completed" role="tab" aria-selected="false" data-i18n="filter_completed">완료</button>
+      <main class="main" role="main">
+        <section class="cards" aria-labelledby="cards-title" style="grid-area: cards;">
+          <h2 id="cards-title" class="section-title">문장 카드</h2>
+          <div id="cards-grid" class="cards__grid" aria-live="polite"></div>
+          <div class="nav-next">
+            <a href="diary.html" class="btn btn--primary" aria-label="일기 작성 페이지로 이동">일기 작성 페이지로 이동</a>
           </div>
-          <div class="counter" aria-live="polite">
-            <span id="count-all">0</span> <span data-i18n="count_total">전체</span> ·
-            <span id="count-active">0</span> <span data-i18n="count_active">미완료</span>
-          </div>
-        </div>
-
-        <ul id="todo-list" class="todo-list" aria-label="Todo list"></ul>
+        </section>
       </main>
 
-      <footer class="app__footer">
-        <small>© <span id="year"></span> Todo App</small>
+      <footer class="footer" role="contentinfo">
+        <small>© <span id="year"></span> English Diary</small>
+        <span class="sep">·</span>
+        <a href="#" id="download-json" class="link" aria-label="데이터 소스">데이터: sentences.json</a>
       </footer>
     </div>
 

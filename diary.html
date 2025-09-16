@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>영어 일기 작성 · 저장한 문장</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="container">
+      <header class="header" role="banner">
+        <div class="brand">
+          <h1 class="brand__title">영어 일기 작성</h1>
+          <p class="brand__subtitle">저장한 문장을 참고하여 오늘의 일기를 작성해보세요.</p>
+        </div>
+        <div class="controls">
+          <a class="btn" href="index.html" aria-label="학습 페이지로 이동">학습 페이지</a>
+        </div>
+      </header>
+
+      <main class="main" role="main">
+        <section class="cards" aria-labelledby="cards-title" style="display:none">
+          <h2 id="cards-title" class="section-title">문장 카드</h2>
+          <div id="cards-grid" class="cards__grid" aria-live="polite"></div>
+        </section>
+
+        <aside class="sidebar" aria-labelledby="sidebar-title">
+          <h2 id="sidebar-title" class="section-title">저장한 문장</h2>
+          <ul id="sidebar-list" class="sidebar__list" aria-live="polite"></ul>
+        </aside>
+
+        <section class="editor" aria-labelledby="editor-title">
+          <h2 id="editor-title" class="section-title">일기 작성</h2>
+          <div class="editor__toolbar">
+            <button id="btn-load" class="btn" aria-label="불러오기">불러오기</button>
+            <button id="btn-save" class="btn btn--primary" aria-label="저장">저장</button>
+            <button id="btn-clear" class="btn" aria-label="지우기">지우기</button>
+          </div>
+          <textarea id="diary" class="editor__area" rows="14" placeholder="오늘의 영어 일기를 작성해보세요..." aria-label="일기 에디터"></textarea>
+        </section>
+      </main>
+
+      <footer class="footer" role="contentinfo">
+        <small>© <span id="year"></span> English Diary</small>
+        <span class="sep">·</span>
+        <a href="#" id="download-json" class="link" aria-label="데이터 소스">데이터: sentences.json</a>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

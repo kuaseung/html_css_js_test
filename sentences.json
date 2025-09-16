@@ -1,0 +1,106 @@
+{
+  "levels": {
+    "kindergarten": {
+      "label": "유치원",
+      "sentences": [
+        {"en":"I like cats.", "ko":"나는 고양이를 좋아해요."},
+        {"en":"This is a red ball.", "ko":"이것은 빨간 공이에요."},
+        {"en":"The sun is bright.", "ko":"해가 밝아요."},
+        {"en":"I can jump.", "ko":"나는 뛸 수 있어요."},
+        {"en":"We play outside.", "ko":"우리는 밖에서 놀아요."},
+        {"en":"I love my mom.", "ko":"나는 엄마를 사랑해요."},
+        {"en":"This ice cream is sweet.", "ko":"이 아이스크림은 달아요."},
+        {"en":"Look at the blue sky.", "ko":"파란 하늘을 보세요."},
+        {"en":"I have a toy car.", "ko":"나는 장난감 자동차가 있어요."},
+        {"en":"I draw a house.", "ko":"나는 집을 그려요."},
+        {"en":"The bird can fly.", "ko":"새는 날 수 있어요."},
+        {"en":"I am happy today.", "ko":"나는 오늘 행복해요."}
+      ]
+    },
+    "elementary_low": {
+      "label": "초등 저학년",
+      "sentences": [
+        {"en":"I went to the park with my friend.", "ko":"나는 친구와 공원에 갔어요."},
+        {"en":"We played on the swings.", "ko":"우리는 그네를 탔어요."},
+        {"en":"I ate a sandwich for lunch.", "ko":"나는 점심으로 샌드위치를 먹었어요."},
+        {"en":"My teacher gave us homework.", "ko":"선생님이 숙제를 주셨어요."},
+        {"en":"I read a fun storybook.", "ko":"나는 재미있는 이야기책을 읽었어요."},
+        {"en":"It started to rain in the afternoon.", "ko":"오후에 비가 오기 시작했어요."},
+        {"en":"I wore my yellow raincoat.", "ko":"나는 노란 우비를 입었어요."},
+        {"en":"I helped my dad wash the car.", "ko":"나는 아빠가 차를 씻는 것을 도왔어요."},
+        {"en":"I practiced writing letters.", "ko":"나는 글자 쓰기를 연습했어요."},
+        {"en":"I went to bed early.", "ko":"나는 일찍 잠자리에 들었어요."},
+        {"en":"I brushed my teeth before bed.", "ko":"잠자기 전에 이를 닦았어요."},
+        {"en":"Today was a good day.", "ko":"오늘은 좋은 날이었어요."}
+      ]
+    },
+    "elementary_high": {
+      "label": "초등 고학년",
+      "sentences": [
+        {"en":"I joined the school science club.", "ko":"나는 학교 과학 동아리에 가입했어요."},
+        {"en":"We did an experiment about plants.", "ko":"우리는 식물에 관한 실험을 했어요."},
+        {"en":"I learned how to measure time with a stopwatch.", "ko":"나는 스톱워치로 시간을 재는 법을 배웠어요."},
+        {"en":"After school, I went to the library.", "ko":"방과 후에 도서관에 갔어요."},
+        {"en":"I borrowed a book about space.", "ko":"나는 우주에 관한 책을 빌렸어요."},
+        {"en":"I practiced the piano for thirty minutes.", "ko":"나는 피아노를 30분 연습했어요."},
+        {"en":"I helped my sister with her homework.", "ko":"나는 동생의 숙제를 도와줬어요."},
+        {"en":"I tried a new recipe for dinner.", "ko":"저녁으로 새로운 요리법을 시도했어요."},
+        {"en":"I wrote a short diary about my day.", "ko":"나는 오늘 하루에 대해 짧은 일기를 썼어요."},
+        {"en":"I set goals for tomorrow.", "ko":"나는 내일의 목표를 세웠어요."},
+        {"en":"I felt proud of my efforts.", "ko":"나는 내 노력에 대해 자랑스러웠어요."},
+        {"en":"I went to sleep feeling calm.", "ko":"나는 평온한 마음으로 잠들었어요."}
+      ]
+    },
+    "middle": {
+      "label": "중학생",
+      "sentences": [
+        {"en":"I had a group project in history class.", "ko":"역사 시간에 모둠 과제가 있었어요."},
+        {"en":"We discussed different causes of the war.", "ko":"우리는 전쟁의 다양한 원인에 대해 토론했어요."},
+        {"en":"I presented my part with confidence.", "ko":"나는 자신감 있게 내 부분을 발표했어요."},
+        {"en":"After school, I exercised at the gym.", "ko":"방과 후에 체육관에서 운동했어요."},
+        {"en":"I felt tired but refreshed afterward.", "ko":"피곤했지만 상쾌했어요."},
+        {"en":"I prepared for tomorrow's math quiz.", "ko":"내일 수학 퀴즈를 준비했어요."},
+        {"en":"I reviewed formulas and solved problems.", "ko":"공식을 복습하고 문제를 풀었어요."},
+        {"en":"At night, I watched a documentary.", "ko":"밤에 다큐멘터리를 봤어요."},
+        {"en":"It inspired me to learn more.", "ko":"더 배우고 싶은 영감을 받았어요."},
+        {"en":"I organized my desk to focus better.", "ko":"더 집중하기 위해 책상을 정리했어요."},
+        {"en":"I wrote about my feelings in my diary.", "ko":"나는 일기에 내 감정에 대해 썼어요."},
+        {"en":"I promised myself to keep improving.", "ko":"나는 계속 발전하겠다고 다짐했어요."}
+      ]
+    },
+    "high": {
+      "label": "고등학생",
+      "sentences": [
+        {"en":"I studied chemistry and reviewed reaction rates.", "ko":"나는 화학을 공부하고 반응 속도를 복습했어요."},
+        {"en":"I attended a career counseling session.", "ko":"진로 상담에 참석했어요."},
+        {"en":"It helped me set realistic goals.", "ko":"그것은 내가 현실적인 목표를 세우는 데 도움이 되었어요."},
+        {"en":"I practiced listening for the English exam.", "ko":"영어 시험을 위해 듣기 연습을 했어요."},
+        {"en":"I summarized key points in my notebook.", "ko":"중요한 요점을 공책에 요약했어요."},
+        {"en":"I managed my time using a planner.", "ko":"플래너를 사용하여 시간을 관리했어요."},
+        {"en":"I took a short walk to clear my head.", "ko":"머리를 맑게 하려고 잠깐 산책했어요."},
+        {"en":"I discussed study strategies with friends.", "ko":"친구들과 학습 전략에 대해 논의했어요."},
+        {"en":"I reflected on my progress this week.", "ko":"이번 주 나의 진전을 되돌아보았어요."},
+        {"en":"I prepared questions for tomorrow's class.", "ko":"내일 수업을 위한 질문을 준비했어요."},
+        {"en":"I wrote a diary entry about my goals.", "ko":"나의 목표에 대한 일기 항목을 썼어요."},
+        {"en":"I went to bed at a reasonable time.", "ko":"나는 적당한 시간에 잠자리에 들었어요."}
+      ]
+    },
+    "university": {
+      "label": "대학생",
+      "sentences": [
+        {"en":"I reflected on my study habits today.", "ko":"오늘 내 공부 습관을 되돌아보았다."},
+        {"en":"I attended a seminar on machine learning ethics.", "ko":"머신러닝 윤리에 관한 세미나에 참석했다."},
+        {"en":"The discussion broadened my perspective.", "ko":"그 논의는 내 시야를 넓혀 주었다."},
+        {"en":"I organized citations for my research paper.", "ko":"연구 논문을 위한 참조 목록을 정리했다."},
+        {"en":"I revised my resume and portfolio.", "ko":"이력서와 포트폴리오를 수정했다."},
+        {"en":"I collaborated with peers on a group project.", "ko":"동료들과 함께 조별 과제를 진행했다."},
+        {"en":"I practiced a presentation for next week.", "ko":"다음 주 발표를 연습했다."},
+        {"en":"I explored a new café near campus.", "ko":"캠퍼스 근처 새 카페를 탐방했다."},
+        {"en":"The atmosphere helped me focus.", "ko":"분위기가 집중에 도움이 되었다."},
+        {"en":"I updated my learning plan for the semester.", "ko":"이번 학기 학습 계획을 업데이트했다."},
+        {"en":"I wrote about gratitude and challenges in my diary.", "ko":"감사와 도전에 대해 일기에 적었다."},
+        {"en":"I set small, achievable goals for tomorrow.", "ko":"내일을 위한 작고 실현 가능한 목표를 설정했다."}
+      ]
+    }
+  }
+}
