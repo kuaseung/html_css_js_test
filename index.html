@@ -1,89 +1,50 @@
-<html>
-    <head>
-        <title>ICT</title>
-        <style>
-            #h1title {
-                color: #2c3e50;
-                font-size: 2.8em;
-                font-weight: 600;
-                text-align: center;
-                margin: 30px 0;
-                padding: 20px 0;
-                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                border-radius: 10px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-                letter-spacing: 1px;
-                position: relative;
-                line-height: 1.4;
-                text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            }
-            
-            #h1title::after {
-                content: '';
-                display: block;
-                width: 80px;
-                height: 4px;
-                background: #4CAF50;
-                margin: 15px auto 0;
-                border-radius: 2px;
-            }
-            /* Styling for 2-2 class */
-            .class2 {
-                color: #2c3e50;
-                font-size: 1.2em;
-                line-height: 1.6;
-                padding: 15px 25px;
-                margin: 20px 0;
-                background-color: #f8f9fa;
-                border-left: 5px solid #4CAF50;
-                border-radius: 0 8px 8px 0;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-                position: relative;
-                transition: all 0.3s ease;
-                max-width: 80%;
-            }
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="app">
+      <header class="app__header">
+        <div class="app__title">
+          <h1 data-i18n="title">나의 투두리스트</h1>
+          <span class="app__date" id="today"></span>
+        </div>
+        <div class="app__actions">
+          <button id="lang-toggle" class="btn" aria-label="Toggle language">한/영</button>
+        </div>
+      </header>
 
-            .class2:hover {
-                background-color: #f1f8ff;
-                transform: translateX(5px);
-                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            }
-        </style>
-    </head>
-    <body>
-        <h1 id="h1title">H1 내용 부분</h1>
-        <h2>H2 내용 부분</h2>
-        <h3>H3 내용 부분</h3>
-        <h4>H4 내용 부분</h4>
-        <h5>H5 내용 부분</h5>
-        <h6>H6 내용 부분</h6>
-        <p>p 태그 상세 내용</p>
-        <a>a 태그</a>
-        <div class="a_tag_list">
-            <a href="https://www.w3schools.com/html/default.asp">학습사이트 링크</a>
-            <br>
-            <a href="https://www.naver.com/">네이버 링크</a>
-            <a href="https://www.naver.com/" target="_blank">네이버 링크-새탭에서</a><br>
+      <main class="app__main">
+        <form id="add-form" class="add-form" autocomplete="off">
+          <label for="todo-input" class="sr-only" data-i18n="input_label">할 일 입력</label>
+          <input id="todo-input" name="todo" type="text" placeholder="해야 할 일을 입력하세요" data-i18n-placeholder="input_placeholder" />
+          <button type="submit" class="btn btn--primary" data-i18n="add">추가</button>
+        </form>
+
+        <div class="toolbar">
+          <div class="filters" role="tablist" aria-label="Filters">
+            <button class="filter btn btn--ghost is-active" data-filter="all" role="tab" aria-selected="true" data-i18n="filter_all">전체</button>
+            <button class="filter btn btn--ghost" data-filter="active" role="tab" aria-selected="false" data-i18n="filter_active">미완료</button>
+            <button class="filter btn btn--ghost" data-filter="completed" role="tab" aria-selected="false" data-i18n="filter_completed">완료</button>
+          </div>
+          <div class="counter" aria-live="polite">
+            <span id="count-all">0</span> <span data-i18n="count_total">전체</span> ·
+            <span id="count-active">0</span> <span data-i18n="count_active">미완료</span>
+          </div>
         </div>
-        <div class="img_tag_list">
-            <img src="https://images.unsplash.com/photo-1721833144160-1bb72d04ff4c?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width="400" height="400">
-            <img src="https://images.unsplash.com/photo-1757877942839-e3ed20a6c8c4?q=80&w=765&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width="400" height="400">
-            <img src="photo1.png" width="400" height="400">
-        </div>
-        <div class="contents 1">
-            <ol>
-                <li>Todo 1</li>
-                <li>Todo 2</li>
-                <li>Todo 3</li>
-            </ol>
-        </div>
-        <div class="contents 2">
-            <ul>
-                <li>Todo 1</li>
-                <li>Todo 2</li>
-                <li>Todo 3</li>
-            </ul>
-        </div>
-        <p class="class2">실습2-2</p>
-    </body>
+
+        <ul id="todo-list" class="todo-list" aria-label="Todo list"></ul>
+      </main>
+
+      <footer class="app__footer">
+        <small>© <span id="year"></span> Todo App</small>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
 </html>
